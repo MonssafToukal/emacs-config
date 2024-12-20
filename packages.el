@@ -61,9 +61,5 @@
 (package! company-box)
 (package! company-terraform)
 (package! dap-mode)
-(package! disable-mouse)
 (package! evil-tutor)
-(package! puppet-mode)
-(package! use-package-hydra)
-(package! popper)pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will l
