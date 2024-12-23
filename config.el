@@ -75,6 +75,9 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+;;
+
+(setq projectile-project-search-path '("~/projects"))
 
 ; Move around windows
 (map! :nivem "C-h"  #'windmove-left)
