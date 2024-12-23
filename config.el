@@ -93,6 +93,19 @@
 
 (map! :nvm "-" 'dired-jump)
 
+;; remap C-d to C-dzz in vim
+(evil-define-key 'normal 'scroll-down-centered (kbd "C-d") (lambda nil
+                                                (evil-scroll-down 0)
+                                                (evil-scroll-line-to-center 0)
+                                                )
+  )
+;; remap C-u to C-uzz in vim
+(evil-define-key 'normal 'scroll-up-centered (kbd "C-u") (lambda nil
+                                                (evil-scroll-up 0)
+                                                (evil-scroll-line-to-center 0)
+                                                )
+  )
+
 ;; Navigate through workspaces
 ; previous ws
 (map! "C-S-h" #'+workspace/switch-left)
