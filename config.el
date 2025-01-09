@@ -91,7 +91,15 @@
 (map! :nivem "C-S-<up>"    #'evil-window-increase-height)
 (map! :nivem "C-S-<down>"  #'evil-window-decrease-height)
 
+
+
 (map! :nvm "-" 'dired-jump)
+(map! :map dired-mode-map
+      :nv "." 'dired-create-empty-file )
+
+
+(map! :after evil :map dired-mode-map
+      :nv "u" #'dired-unmark)
 
 ;; remap C-d to C-dzz in vim
 
