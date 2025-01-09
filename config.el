@@ -22,7 +22,7 @@
 ;; accept. For example:
 ;;
 (setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 20)
-     doom-variable-pitch-font (font-spec :family "JetBrainsMono Nerd Font" :size 20))
+      doom-variable-pitch-font (font-spec :family "JetBrainsMono Nerd Font" :size 20))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -79,7 +79,7 @@
 
 (setq projectile-project-search-path '("~/projects"))
 
-; Move around windows
+                                        ; Move around windows
 (map! :nivem "C-h"  #'windmove-left)
 (map! :nivem "C-l" #'windmove-right)
 (map! :nivem "C-k"   #'windmove-up)
@@ -94,22 +94,16 @@
 (map! :nvm "-" 'dired-jump)
 
 ;; remap C-d to C-dzz in vim
-(evil-define-key 'normal 'scroll-down-centered (kbd "C-d") (lambda nil
-                                                (evil-scroll-down 0)
-                                                (evil-scroll-line-to-center 0)
-                                                )
-  )
-;; remap C-u to C-uzz in vim
-(evil-define-key 'normal 'scroll-up-centered (kbd "C-u") (lambda nil
-                                                (evil-scroll-up 0)
-                                                (evil-scroll-line-to-center 0)
-                                                )
-  )
+
+;; ;; remap C-u to C-uzz in vim
+
+(map! :nv "C-d" (lambda()(interactive) (evil-scroll-down 0) (recenter)))
+(map! :nv "C-u" (lambda ()(interactive) (evil-scroll-up 0) (recenter)))
 
 ;; Navigate through workspaces
-; previous ws
+                                        ; previous ws
 (map! "C-S-h" #'+workspace/switch-left)
-; next ws
+                                        ; next ws
 (map! "C-S-l" #'+workspace/switch-right)
 
 ;; (when (display-graphic-p)
@@ -138,5 +132,3 @@
 (map! :after vterm
       :map vterm-mode-map
       :ni "C-c" #'vterm--self-insert)
-
-;(load! "misc/lsp.el")
