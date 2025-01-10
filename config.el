@@ -76,7 +76,7 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 ;;
-
+(setq shell-file-name (executable-find "bash"))
 (setq projectile-project-search-path '("~/projects"))
 
                                         ; Move around windows
@@ -140,3 +140,7 @@
 (map! :after vterm
       :map vterm-mode-map
       :ni "C-c" #'vterm--self-insert)
+(setq-default vterm-shell (executable-find "fish"))
+
+(load! "lsp/tree-sitter.el")
+(load! "lsp/go.el")
