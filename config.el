@@ -91,6 +91,9 @@
 (map! :nivem "C-S-<up>"    #'evil-window-increase-height)
 (map! :nivem "C-S-<down>"  #'evil-window-decrease-height)
 
+(map! :nivem "H" #'+tabs:previous-or-goto)
+(map! :nivem "L" #'+tabs:next-or-goto)
+
 
 
 (map! :nvm "-" 'dired-jump)
@@ -140,7 +143,10 @@
 (map! :after vterm
       :map vterm-mode-map
       :ni "C-c" #'vterm--self-insert)
+
 (setq-default vterm-shell (executable-find "fish"))
+(setq-default explicit-shell-file-name "/usr/bin/fish")
 
 (load! "lsp/tree-sitter.el")
 (load! "lsp/go.el")
+(load! "lsp/terraform.el")

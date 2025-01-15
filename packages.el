@@ -62,4 +62,6 @@
 (package! company-terraform)
 (package! dap-mode)
 (package! evil-tutor)
+
+(package! puppet-ts-mode)
 ;; ...Or *all* packages (NOT RECOMMENDED; will l

@@ -14,7 +14,8 @@
         (toml "https://github.com/tree-sitter/tree-sitter-toml")
         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+        (puppet "https://github.com/tree-sitter-grammars/tree-sitter-puppet")))
 
 (setq major-mode-remap-alist
       '((yaml-mode . yaml-ts-mode)
@@ -23,6 +24,10 @@
         (typescript-mode . typescript-ts-mode)
         (json-mode . json-ts-mode)
         (css-mode . css-ts-mode)
-        (python-mode . python-ts-mode)))
+        (python-mode . python-ts-mode)
+        (go-mode . go-ts-mode)
+        (puppet-mode . puppet-ts-mode)))
 
 (treesit-language-available-p 'go)
+
+;; (setq! lsp-use-workspace-root-for-server-default-directory t)
