@@ -15,7 +15,8 @@
         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
         (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-        (puppet "https://github.com/tree-sitter-grammars/tree-sitter-puppet")))
+        (puppet "https://github.com/tree-sitter-grammars/tree-sitter-puppet")
+        (terraform "https://github.com/tree-sitter-grammars/tree-sitter-hcl")))
 
 (setq major-mode-remap-alist
       '((yaml-mode . yaml-ts-mode)

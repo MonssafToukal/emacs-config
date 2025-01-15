@@ -1,2 +1,1 @@
-;;
-;; (delete 'lsp-terraform lsp-client-packages)
+;;; $DOOMDIR/lsp/terraform.el -*- lexical-binding: t; -*-
