@@ -91,8 +91,8 @@
 (map! :nivem "C-S-<up>"    #'evil-window-increase-height)
 (map! :nivem "C-S-<down>"  #'evil-window-decrease-height)
 
-(map! :nivem "H" #'+tabs:previous-or-goto)
-(map! :nivem "L" #'+tabs:next-or-goto)
+(map! :nvem "S-h" #'+tabs:previous-or-goto)
+(map! :nvem "S-l" #'+tabs:next-or-goto)
 
 
 
