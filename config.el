@@ -91,10 +91,8 @@
 (map! :nivem "C-S-<up>"    #'evil-window-increase-height)
 (map! :nivem "C-S-<down>"  #'evil-window-decrease-height)
 
-(map! :nvem "S-h" #'+tabs:previous-or-goto)
-(map! :nvem "S-l" #'+tabs:next-or-goto)
-
-
+(map! :after evil :nv "S-H" #'+tabs:previous-or-goto)
+(map! :after evil :nv "S-L" #'+tabs:next-or-goto)
 
 (map! :nvm "-" 'dired-jump)
 (map! :map dired-mode-map

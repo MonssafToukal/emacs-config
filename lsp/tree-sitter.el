@@ -30,5 +30,3 @@
         (puppet-mode . puppet-ts-mode)))
 
 (treesit-language-available-p 'go)
-
-;; (setq! lsp-use-workspace-root-for-server-default-directory t)
