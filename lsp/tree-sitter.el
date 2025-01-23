@@ -30,3 +30,4 @@
         (puppet-mode . puppet-ts-mode)))
 
 (treesit-language-available-p 'go)
+(treesit-language-available-p 'bash)

@@ -115,8 +115,11 @@
                                         ; next ws
 (map! "C-S-l" #'+workspace/switch-right)
 
-;; (when (display-graphic-p)
-;;   (require 'all-the-icons))
+(map! :after magit :map magit-mode-map :nv "F" nil)
+(map! :after magit :map magit-mode-map :nv "p" #'magit-pull)
+
+(transient-insert-suffix 'magit-dispatch (kbd "h") '("p" "Pull" magit-pull))
+(transient-remove-suffix 'magit-dispatch  '("F"))
 
 ;; Open the shortcut menu quicker
 (setq! which-key-idle-delay 0.3)
