@@ -95,7 +95,7 @@
 (map! :after evil :nv "L" #'+tabs:next-or-goto)
 
 (map! :nvm "-" 'dired-jump)
-(map! :map dired-mode-map
+(map! :after dired :map dired-mode-map
       :nv "." 'dired-create-empty-file )
 
 
