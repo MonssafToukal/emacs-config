@@ -21,8 +21,8 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 20)
-      doom-variable-pitch-font (font-spec :family "JetBrainsMono Nerd Font" :size 20))
+(setq doom-font (font-spec :family "JetBrainsMonoNL Nerd Font" :size 20)
+      doom-variable-pitch-font (font-spec :family "JetBrainsMonoNL Nerd Font" :size 20))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -118,8 +118,8 @@
 (map! :after magit :map magit-mode-map :nv "F" nil)
 (map! :after magit :map magit-mode-map :nv "p" #'magit-pull)
 
-(transient-insert-suffix 'magit-dispatch (kbd "h") '("p" "Pull" magit-pull))
-(transient-remove-suffix 'magit-dispatch  '("F"))
+;; (transient-insert-suffix 'magit-dispatch (kbd "h") '("p" "Pull" magit-pull))
+;; (transient-remove-suffix 'magit-dispatch  '("F"))
 
 ;; Open the shortcut menu quicker
 (setq! which-key-idle-delay 0.3)
