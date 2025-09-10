@@ -106,8 +106,8 @@
 
 ;; ;; remap C-u to C-uzz in vim
 
-(map! :nv "C-d" (lambda()(interactive) (evil-scroll-down 0) (recenter)))
-(map! :nv "C-u" (lambda ()(interactive) (evil-scroll-up 0) (recenter)))
+(map! :after evil :nv "C-d" '(lambda()(interactive) (evil-scroll-down 0) (recenter)))
+(map! :after evil :nv "C-u" '(lambda ()(interactive) (evil-scroll-up 0) (recenter)))
 
 ;; Navigate through workspaces
                                         ; previous ws
@@ -147,6 +147,9 @@
 
 (setq-default vterm-shell (executable-find "fish"))
 (setq-default explicit-shell-file-name "/usr/bin/fish")
+
+
+(setq lsp-pyright-langserver-command "basedpyright")
 
 (load! "lsp/tree-sitter.el")
 (load! "lsp/go.el")
