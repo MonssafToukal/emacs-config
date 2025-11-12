@@ -77,7 +77,7 @@
 ;; they are implemented.
 ;;
 (setq shell-file-name (executable-find "bash"))
-(setq projectile-project-search-path '("~/projects"))
+(setq projectile-project-search-path '("~/projects" "~/org"))
 
                                         ; Move around windows
 (map! :nivem "C-h"  #'windmove-left)
