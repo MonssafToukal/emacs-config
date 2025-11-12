@@ -156,11 +156,7 @@
        ;;plantuml          ; diagrams for confusing people more
        ;;graphviz          ; diagrams for confusing yourself even more
        ;;purescript        ; javascript, but functional
-<<<<<<< Updated upstream
-       (python +lsp +tree-sitter)            ; beautiful is better than ugly
-=======
        (python +lsp +pyright +tree-sitter)            ; beautiful is better than uglyS
->>>>>>> Stashed changes
        ;;qt                ; the 'cutest' gui framework ever
        ;;racket            ; a DSL for DSL
        ;;raku              ; the artist formerly known as perl6

@@ -64,5 +64,6 @@
 (package! evil-tutor)
 
 (package! puppet-ts-mode)
+(package! plantuml-mode)
 
 ;; ...Or *all* packages (NOT RECOMMENDED; will l
