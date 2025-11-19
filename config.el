@@ -103,11 +103,19 @@
       :nv "u" #'dired-unmark)
 
 ;; remap C-d to C-dzz in vim
+;; 1. Ensure C-u and C-d perform the standard scroll actions
+(map! :after evil
+      :nv "C-u" #'evil-scroll-up
+      :nv "C-d" #'evil-scroll-down)
 
-;; ;; remap C-u to C-uzz in vim
+;; 2. Add "Advice" to automatically recenter after scrolling
+(defadvice! my-recenter-after-scroll-down (&rest _)
+  :after #'evil-scroll-down
+  (recenter))
 
-(map! :after evil :nv "C-d" '(lambda()(interactive) (evil-scroll-down 0) (recenter)))
-(map! :after evil :nv "C-u" '(lambda ()(interactive) (evil-scroll-up 0) (recenter)))
+(defadvice! my-recenter-after-scroll-up (&rest _)
+  :after #'evil-scroll-up
+  (recenter))
 
 ;; Navigate through workspaces
                                         ; previous ws
