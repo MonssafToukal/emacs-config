@@ -156,6 +156,11 @@
 (setq-default vterm-shell (executable-find "fish"))
 (setq-default explicit-shell-file-name "/usr/bin/fish")
 
+;; generic debugger setup
+
+(after! dape
+  (setq dape-cwd-function #'projectile-project-root)
+  (setq dap-print-io t))
 
 (setq lsp-pyright-langserver-command "basedpyright")
-(load! "lsp/go.el")
+(load! "langs/go.el")
