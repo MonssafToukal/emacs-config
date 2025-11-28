@@ -159,8 +159,7 @@
 ;; generic debugger setup
 
 (after! dape
-  (setq dape-cwd-function #'projectile-project-root)
-  (setq dap-print-io t))
+  (setq dape-debug t))
 
 (setq lsp-pyright-langserver-command "basedpyright")
 (load! "langs/go.el")
