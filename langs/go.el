@@ -3,6 +3,11 @@
 (add-to-list 'exec-path (expand-file-name "~/go/bin"))
 (setenv "PATH" (concat (getenv "PATH") ":/home/mtoukal/go/bin"))
 
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-organize-imports t t )
+  (add-hook 'before-save-hook #'lsp-format-buffer t t ))
+
+(add-hook 'go-ts-mode-hook #'lsp-go-install-save-hooks)
 
 (after! dape
   ;; Add a new configuration for debugging Go tests.
