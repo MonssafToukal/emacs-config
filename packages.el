@@ -64,5 +64,7 @@
 (package! evil-tutor)
 
 (package! puppet-ts-mode)
+(package! copilot
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
 
 ;; ...Or *all* packages (NOT RECOMMENDED; will l

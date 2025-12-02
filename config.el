@@ -126,9 +126,6 @@
 (map! :after magit :map magit-mode-map :nv "F" nil)
 (map! :after magit :map magit-mode-map :nv "p" #'magit-pull)
 
-;; (transient-insert-suffix 'magit-dispatch (kbd "h") '("p" "Pull" magit-pull))
-;; (transient-remove-suffix 'magit-dispatch  '("F"))
-
 ;; Open the shortcut menu quicker
 (setq! which-key-idle-delay 0.3)
 
@@ -161,8 +158,6 @@
 (after! dape
   (setq dape-debug t))
 
-(setq lsp-pyright-langserver-command "basedpyright")
-
 ;; Config for GPTEL
 ;;
 (after! gptel
@@ -176,3 +171,5 @@
   (setq gptel-model 'gemini-flash-latest))
 
 (load! "langs/go.el")
+(load! "langs/python.el")
+(load! "langs/terraform.el")
