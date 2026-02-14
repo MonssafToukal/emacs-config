@@ -170,6 +170,15 @@
            :models (mapcar #'car gptel--gemini-models)))
   (setq gptel-model 'gemini-flash-latest))
 
+
+
+(map! :after projectile
+      :map projectile-command-map
+      "R" 'projectile-replace-regexp)
+
+;; (map! :nivem "C-h"  #'windmove-left)
+
+
 (load! "langs/go.el")
 (load! "langs/python.el")
 (load! "langs/terraform.el")
