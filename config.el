@@ -42,7 +42,8 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
-(setq show-trailing-whitespace t)
+(add-hook! '(prog-mode-hook text-mode-hook conf-mode-hook)
+  (setq-local show-trailing-whitespace t))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -93,6 +94,7 @@
 
 (map! :after evil :nv "H" #'+tabs:previous-or-goto)
 (map! :after evil :nv "L" #'+tabs:next-or-goto)
+(map! :after evil :nv "g t o" #'centaur-tabs-kill-other-buffers-in-current-group)
 
 (map! :nvm "-" 'dired-jump)
 (map! :after dired :map dired-mode-map
@@ -102,20 +104,20 @@
 (map! :after evil :map dired-mode-map
       :nv "u" #'dired-unmark)
 
-;; remap C-d to C-dzz in vim
-;; 1. Ensure C-u and C-d perform the standard scroll actions
-(map! :after evil
-      :nv "C-u" #'evil-scroll-up
-      :nv "C-d" #'evil-scroll-down)
+(map! :n "C-d" (cmd! (evil-scroll-down nil) (recenter))
+      :n "C-u" (cmd! (evil-scroll-up nil) (recenter))
+      :v "C-d" #'evil-scroll-down
+      :v "C-u" #'evil-scroll-up)
 
-;; 2. Add "Advice" to automatically recenter after scrolling
-(defadvice! my-recenter-after-scroll-down (&rest _)
-  :after #'evil-scroll-down
-  (recenter))
-
-(defadvice! my-recenter-after-scroll-up (&rest _)
-  :after #'evil-scroll-up
-  (recenter))
+;; (map! :after evil
+;;       :nv "C-u" #'evil-scroll-up
+;;       :nv "C-d" #'evil-scroll-down)
+;; (defadvice! my-recenter-after-scroll-down (&rest _)
+;;   :after #'evil-scroll-down
+;;   (recenter))
+;; (defadvice! my-recenter-after-scroll-up (&rest _)
+;;   :after #'evil-scroll-up
+;;   (recenter))
 
 ;; Navigate through workspaces
                                         ; previous ws
@@ -155,20 +157,15 @@
 
 ;; generic debugger setup
 
-(after! dape
-  (setq dape-debug t))
 
 ;; Config for GPTEL
 ;;
 (after! gptel
-  (setq! gptel-api-key (getenv "GEMINI_API_KEY"))
-  ;;Gemini backends
   (setq! gptel-backend
-         (gptel-make-gemini "Gemini"
-           :key gptel-api-key
-           :stream t
-           :models (mapcar #'car gptel--gemini-models)))
-  (setq gptel-model 'gemini-flash-latest))
+         (gptel-make-anthropic "Claude"
+           :key (getenv "CLAUDE_CODE_OAUTH_TOKEN")
+           :stream t))
+  (setq! gptel-model 'claude-sonnet-4-6))
 
 
 
@@ -176,7 +173,12 @@
       :map projectile-command-map
       "R" 'projectile-replace-regexp)
 
-;; (map! :nivem "C-h"  #'windmove-left)
+
+(use-package! claude-code-ide
+  :config
+  (claude-code-ide-emacs-tools-setup)
+  (map! :leader
+        :desc "Claude Code" "o c" #'claude-code-ide-menu))
 
 
 (load! "langs/go.el")

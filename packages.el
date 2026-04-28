@@ -48,23 +48,12 @@
 ;; (unpin! pinned-package another-ikely break things)
 ;; (unpin! t)
 
-;; LSP related packages
-(package! company-lsp)
-(package! flycheck)
-(package! flycheck-golangci-lint)
-(package! hydra)
-(package! lsp-ui)
-(package! yasnippet)
-
 ;; Misc packages
-(package! all-the-icons)
-(package! company-box)
+(package! hydra)
 (package! company-terraform)
-(package! dap-mode)
 (package! evil-tutor)
 
-(package! puppet-ts-mode)
-(package! copilot
-  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
+(package! claude-code-ide
+  :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
 
 ;; ...Or *all* packages (NOT RECOMMENDED; will l
