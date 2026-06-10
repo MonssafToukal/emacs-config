@@ -178,8 +178,30 @@
   :config
   (claude-code-ide-emacs-tools-setup)
   (map! :leader
-        :desc "Claude Code" "o c" #'claude-code-ide-menu))
+        :desc "Claude Code" "o c" #'claude-code-ide-menu)
+  ;; Keep vterm terminal size in sync with its window dimensions.
+  ;; Without this, the initial size (set at launch) can diverge from the
+  ;; actual window width when claude-code buffers are shown in splits.
+  (add-hook! 'vterm-mode-hook
+    (defun +claude-code/sync-vterm-size-h ()
+      (add-hook 'window-configuration-change-hook
+        (defun +claude-code/resize-vterm-to-window-h ()
+          (when-let* ((_ (bound-and-true-p vterm--term))
+                      (win (get-buffer-window (current-buffer) t)))
+            (let ((inhibit-read-only t))
+              (vterm--set-size vterm--term
+                               (window-body-height win)
+                               (window-body-width win)))))
+        nil :local))))
 
+;; Fix corfu popup getting stuck on screen / eating buffer space
+(after! corfu
+  (setq corfu-quit-at-boundary t
+        corfu-quit-no-match t
+        corfu-on-exact-match 'quit)
+  ;; Dismiss the popup when leaving Evil insert state
+  (add-hook 'evil-insert-state-exit-hook #'corfu-quit)
+  (add-hook 'evil-normal-state-entry-hook #'corfu-quit))
 
 (load! "langs/go.el")
 (load! "langs/python.el")
