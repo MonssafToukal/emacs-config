@@ -194,14 +194,87 @@
                                (window-body-width win)))))
         nil :local))))
 
-;; Fix corfu popup getting stuck on screen / eating buffer space
+;; Corfu child frame fixes for PGTK on WSLg.
+;;
+;; === Why black rectangles appear ===
+;; When corfu hides its popup on a graphical frame, it does NOT call
+;; `make-frame-invisible' immediately.  Instead it schedules a `run-at-time 0'
+;; timer (corfu--hide-frame-deferred) so that a rapid hide→show within the same
+;; command cycle can cancel the hide and reuse the frame without flicker.
+;;
+;; Under PGTK/Wayland this deferred path is fragile: the timer fires after
+;; Emacs redisplays but before the Wayland compositor has flushed, so the
+;; `make-frame-invisible' call races against the compositor's own repaint.
+;; WSLg (the headless Weston instance in WSL2) loses this race often — the
+;; subsurface is unmapped from Emacs's perspective but Weston keeps rendering
+;; the last committed buffer, leaving a black rectangle on screen.
+;;
+;; Additionally, `inhibit-double-buffering t' is set on corfu's child frames
+;; (see corfu--frame-parameters).  On PGTK this disables GTK's double-buffer
+;; mechanism, which was meant to prevent flicker on X11 but actually makes
+;; Wayland compositing worse: without a complete back-buffer the compositor may
+;; have nothing valid to paint, and shows black instead.
+;;
+;; === The fix ===
+;; 1. Advise `corfu--hide-frame' to skip the timer and call the deferred
+;;    function directly and synchronously on graphical frames.  This removes
+;;    the race window: `make-frame-invisible' runs in the same event-loop turn
+;;    as the hide request.  The hide→show optimisation is preserved because
+;;    `corfu--make-frame' still cancels any pending hide before showing.
+;;
+;; 2. Remove `inhibit-double-buffering' from corfu's child frame parameters.
+;;    This restores proper GTK/Wayland double-buffering so the compositor
+;;    always has a valid buffer to composite.
+;;
+;; 3. Dismiss corfu when leaving Evil insert mode (covers Esc / C-[).
+;;
+;; 4. Provide SPC t K as a manual panic button that force-deletes every child
+;;    frame (corfu, popupinfo, eldoc-box, …) when a ghost still slips through.
+
 (after! corfu
-  (setq corfu-quit-at-boundary t
+  ;; `separator' (upstream default) keeps the popup open while you type
+  ;; space-separated orderless components and while you scroll candidates.
+  ;; Never set this to `t' — that quits at *any* word boundary.
+  (setq corfu-quit-at-boundary 'separator
         corfu-quit-no-match t
         corfu-on-exact-match 'quit)
-  ;; Dismiss the popup when leaving Evil insert state
-  (add-hook 'evil-insert-state-exit-hook #'corfu-quit)
-  (add-hook 'evil-normal-state-entry-hook #'corfu-quit))
+
+  ;; Fix 1: synchronous hide on graphical frames.
+  ;; Replace the deferred `run-at-time 0' path with a direct call so the
+  ;; frame is made invisible in the same turn, before the compositor repaints.
+  (defadvice! +corfu--hide-frame-sync-a (frame)
+    :override #'corfu--hide-frame
+    (when (and (frame-live-p frame) (frame-visible-p frame))
+      ;; TTY already hides synchronously; keep that path unchanged.
+      ;; On GUI, skip the timer and hide immediately.
+      (when-let* ((timer (frame-parameter frame 'corfu--hide-timer)))
+        (cancel-timer timer)
+        (set-frame-parameter frame 'corfu--hide-timer nil))
+      (corfu--hide-frame-deferred frame)))
+
+  ;; Fix 2: re-enable double-buffering on corfu child frames.
+  ;; `inhibit-double-buffering t' was designed for X11; on Wayland/PGTK it
+  ;; causes the compositor to receive an incomplete buffer and paint black.
+  (setq corfu--frame-parameters
+        (assoc-delete-all 'inhibit-double-buffering corfu--frame-parameters))
+
+  ;; Fix 3: dismiss popup on Evil insert→normal transition.
+  (add-hook 'evil-insert-state-exit-hook #'corfu-quit))
+
+;; Fix 4: manual panic button.
+;; Walks frame-list and force-deletes any frame whose `parent-frame' is set.
+;; `delete-frame' is synchronous and immediately destroys the Wayland
+;; subsurface, so the black rectangle vanishes on the next compositor repaint.
+(defun +corfu/kill-child-frames ()
+  "Delete all child frames (corfu popups, doc frames, etc).
+Use this when a corfu child frame gets stuck as a black rectangle."
+  (interactive)
+  (dolist (f (frame-list))
+    (when (frame-parameter f 'parent-frame)
+      (delete-frame f)))
+  (message "All child frames killed."))
+
+(map! :leader :desc "Kill orphan child frames" "t K" #'+corfu/kill-child-frames)
 
 (load! "langs/go.el")
 (load! "langs/python.el")
