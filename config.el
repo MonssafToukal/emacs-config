@@ -21,8 +21,8 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "JetBrainsMonoNL" :size 16)
-      doom-variable-pitch-font (font-spec :family "JetBrainsMonoNL" :size 16))
+(setq doom-font (font-spec :family "JetBrainsMonoNL Nerd Font" :size 16)
+      doom-variable-pitch-font (font-spec :family "JetBrainsMonoNL Nerd Font" :size 16))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -232,33 +232,38 @@
 ;;    frame (corfu, popupinfo, eldoc-box, …) when a ghost still slips through.
 
 (after! corfu
-  ;; `separator' (upstream default) keeps the popup open while you type
-  ;; space-separated orderless components and while you scroll candidates.
-  ;; Never set this to `t' — that quits at *any* word boundary.
+  ;; --- Quit behaviour (unchanged) --------------------------------------------
+  ;; `separator' keeps the popup open while typing space-separated orderless
+  ;; components and while scrolling. Never set this to `t' (quits at any
+  ;; word boundary).
   (setq corfu-quit-at-boundary 'separator
         corfu-quit-no-match t
         corfu-on-exact-match 'quit)
 
-  ;; Fix 1: synchronous hide on graphical frames.
-  ;; Replace the deferred `run-at-time 0' path with a direct call so the
-  ;; frame is made invisible in the same turn, before the compositor repaints.
-  (defadvice! +corfu--hide-frame-sync-a (frame)
-    :override #'corfu--hide-frame
-    (when (and (frame-live-p frame) (frame-visible-p frame))
-      ;; TTY already hides synchronously; keep that path unchanged.
-      ;; On GUI, skip the timer and hide immediately.
-      (when-let* ((timer (frame-parameter frame 'corfu--hide-timer)))
-        (cancel-timer timer)
-        (set-frame-parameter frame 'corfu--hide-timer nil))
-      (corfu--hide-frame-deferred frame)))
+  ;; --- TTY fix: route popups through corfu-terminal (the work/WSL fix) --------
+  ;; Emacs 31's native TTY child frames leave un-erased backgrounds (the black
+  ;; rectangles): make-frame-invisible doesn't repaint the terminal cell grid.
+  ;; corfu-terminal draws with overlays instead — no frame, no residue. Its
+  ;; methods specialise on (window-system nil), so GUI frames are untouched;
+  ;; safe even for a daemon serving both display types.
+  ;; NOTE: requires (package! corfu-terminal) in packages.el.
+  (add-to-list 'warning-suppress-types '(corfu)) ; silence the "not needed on
+                                                 ; 31" notice — we override on
+                                                 ; purpose (native TTY frames
+                                                 ; are the bug)
+  (when (require 'corfu-terminal nil t)
+    (corfu-terminal-mode +1))
 
-  ;; Fix 2: re-enable double-buffering on corfu child frames.
-  ;; `inhibit-double-buffering t' was designed for X11; on Wayland/PGTK it
-  ;; causes the compositor to receive an incomplete buffer and paint black.
-  (setq corfu--frame-parameters
-        (assoc-delete-all 'inhibit-double-buffering corfu--frame-parameters))
+  ;; --- GUI/pgtk fix: re-enable double-buffering on the child frame -----------
+  ;; corfu sets (inhibit-double-buffering . t) to dodge X/Gtk artifacts, but on
+  ;; pgtk/Wayland that hands the compositor a half-drawn surface -> black paint.
+  ;; Strip it ONLY on pgtk; on an X11 build (incl. WSLg XWayland) keep corfu's
+  ;; default, which is correct there.
+  (when (featurep 'pgtk)
+    (setq corfu--frame-parameters
+          (assoc-delete-all 'inhibit-double-buffering corfu--frame-parameters)))
 
-  ;; Fix 3: dismiss popup on Evil insert→normal transition.
+  ;; --- Evil: dismiss popup on insert -> normal (kept — good hygiene) ---------
   (add-hook 'evil-insert-state-exit-hook #'corfu-quit))
 
 ;; Fix 4: manual panic button.
