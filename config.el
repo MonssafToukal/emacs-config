@@ -129,31 +129,31 @@
 (map! :after magit :map magit-mode-map :nv "p" #'magit-pull)
 
 ;; Open the shortcut menu quicker
-(setq! which-key-idle-delay 0.3)
+(setopt which-key-idle-delay 0.3)
 
 ;; Selecting text put it in the PRIMARY clipboard
-(setq! evil-visual-update-x-selection-p t)
+(setopt evil-visual-update-x-selection-p t)
 
 
 ;; Show indicators in the left fringe
 (after! flycheck
-  (setq! flycheck-indication-mode 'left-fringe))
+  (setopt flycheck-indication-mode 'left-fringe))
 
 
-;; Activate clickable url in vterm
-(add-hook! 'vterm-mode-hook
+;; Activate clickable url in ghostel
+(add-hook! 'ghostel-mode-hook
   (goto-address-mode t))
 
-;; Get C-c and ESC key working
-(add-hook! 'vterm-mode-hook
-  (unless evil-collection-vterm-send-escape-to-vterm-p
-    (evil-collection-vterm-toggle-send-escape)))
-(map! :after vterm
-      :map vterm-mode-map
-      :ni "C-c" #'vterm--self-insert)
+(setopt ghostel-shell (executable-find "fish"))
+(setopt explicit-shell-file-name "/usr/bin/fish")
 
-(setq-default vterm-shell (executable-find "fish"))
-(setq-default explicit-shell-file-name "/usr/bin/fish")
+;; Open links in the Windows default browser (Firefox) instead of eww.
+;; WSLg has Windows interop enabled, so cmd.exe can launch it directly;
+;; "start" needs an empty title argument before the URL, or it treats
+;; the URL itself as the window title.
+(setopt browse-url-generic-program "cmd.exe"
+        browse-url-generic-args '("/c" "start" "")
+        browse-url-browser-function #'browse-url-generic)
 
 ;; generic debugger setup
 
@@ -161,11 +161,11 @@
 ;; Config for GPTEL
 ;;
 (after! gptel
-  (setq! gptel-backend
+  (setopt gptel-backend
          (gptel-make-anthropic "Claude"
            :key (getenv "CLAUDE_CODE_OAUTH_TOKEN")
            :stream t))
-  (setq! gptel-model 'claude-sonnet-4-6))
+  (setopt gptel-model 'claude-sonnet-4-6))
 
 
 
@@ -176,6 +176,7 @@
 
 (use-package! claude-code-ide
   :config
+  (setopt claude-code-ide-terminal-backend 'ghostel)
   (claude-code-ide-emacs-tools-setup)
   (map! :leader
         :desc "Claude Code" "o c" #'claude-code-ide-menu))
@@ -184,3 +185,4 @@
 (load! "langs/go.el")
 (load! "langs/python.el")
 (load! "langs/terraform.el")
+(load! "langs/rust.el")
