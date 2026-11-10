@@ -129,31 +129,31 @@
 (map! :after magit :map magit-mode-map :nv "p" #'magit-pull)
 
 ;; Open the shortcut menu quicker
-(setq! which-key-idle-delay 0.3)
+(setopt which-key-idle-delay 0.3)
 
 ;; Selecting text put it in the PRIMARY clipboard
-(setq! evil-visual-update-x-selection-p t)
+(setopt evil-visual-update-x-selection-p t)
 
 
 ;; Show indicators in the left fringe
 (after! flycheck
-  (setq! flycheck-indication-mode 'left-fringe))
+  (setopt flycheck-indication-mode 'left-fringe))
 
 
-;; Activate clickable url in vterm
-(add-hook! 'vterm-mode-hook
+;; Activate clickable url in ghostel
+(add-hook! 'ghostel-mode-hook
   (goto-address-mode t))
 
-;; Get C-c and ESC key working
-(add-hook! 'vterm-mode-hook
-  (unless evil-collection-vterm-send-escape-to-vterm-p
-    (evil-collection-vterm-toggle-send-escape)))
-(map! :after vterm
-      :map vterm-mode-map
-      :ni "C-c" #'vterm--self-insert)
+(setopt ghostel-shell (executable-find "fish"))
+(setopt explicit-shell-file-name "/usr/bin/fish")
 
-(setq-default vterm-shell (executable-find "fish"))
-(setq-default explicit-shell-file-name "/usr/bin/fish")
+;; Open links in the Windows default browser (Firefox) instead of eww.
+;; WSLg has Windows interop enabled, so cmd.exe can launch it directly;
+;; "start" needs an empty title argument before the URL, or it treats
+;; the URL itself as the window title.
+(setopt browse-url-generic-program "cmd.exe"
+        browse-url-generic-args '("/c" "start" "")
+        browse-url-browser-function #'browse-url-generic)
 
 ;; generic debugger setup
 
@@ -161,11 +161,11 @@
 ;; Config for GPTEL
 ;;
 (after! gptel
-  (setq! gptel-backend
+  (setopt gptel-backend
          (gptel-make-anthropic "Claude"
            :key (getenv "CLAUDE_CODE_OAUTH_TOKEN")
            :stream t))
-  (setq! gptel-model 'claude-sonnet-4-6))
+  (setopt gptel-model 'claude-sonnet-4-6))
 
 
 
@@ -176,23 +176,10 @@
 
 (use-package! claude-code-ide
   :config
+  (setopt claude-code-ide-terminal-backend 'ghostel)
   (claude-code-ide-emacs-tools-setup)
   (map! :leader
-        :desc "Claude Code" "o c" #'claude-code-ide-menu)
-  ;; Keep vterm terminal size in sync with its window dimensions.
-  ;; Without this, the initial size (set at launch) can diverge from the
-  ;; actual window width when claude-code buffers are shown in splits.
-  (add-hook! 'vterm-mode-hook
-    (defun +claude-code/sync-vterm-size-h ()
-      (add-hook 'window-configuration-change-hook
-        (defun +claude-code/resize-vterm-to-window-h ()
-          (when-let* ((_ (bound-and-true-p vterm--term))
-                      (win (get-buffer-window (current-buffer) t)))
-            (let ((inhibit-read-only t))
-              (vterm--set-size vterm--term
-                               (window-body-height win)
-                               (window-body-width win)))))
-        nil :local))))
+        :desc "Claude Code" "o c" #'claude-code-ide-menu))
 
 ;; Corfu child frame fixes for PGTK on WSLg.
 ;;
@@ -205,7 +192,7 @@
 ;; Under PGTK/Wayland this deferred path is fragile: the timer fires after
 ;; Emacs redisplays but before the Wayland compositor has flushed, so the
 ;; `make-frame-invisible' call races against the compositor's own repaint.
-;; WSLg (the headless Weston instance in WSL2) loses this race often — the
+;; WSLg (the headless Weston instance in WSL2) loses this race often: the
 ;; subsurface is unmapped from Emacs's perspective but Weston keeps rendering
 ;; the last committed buffer, leaving a black rectangle on screen.
 ;;
@@ -243,12 +230,12 @@
   ;; --- TTY fix: route popups through corfu-terminal (the work/WSL fix) --------
   ;; Emacs 31's native TTY child frames leave un-erased backgrounds (the black
   ;; rectangles): make-frame-invisible doesn't repaint the terminal cell grid.
-  ;; corfu-terminal draws with overlays instead — no frame, no residue. Its
+  ;; corfu-terminal draws with overlays instead, with no frame or residue. Its
   ;; methods specialise on (window-system nil), so GUI frames are untouched;
   ;; safe even for a daemon serving both display types.
   ;; NOTE: requires (package! corfu-terminal) in packages.el.
   (add-to-list 'warning-suppress-types '(corfu)) ; silence the "not needed on
-                                                 ; 31" notice — we override on
+                                                 ; 31" notice; we override on
                                                  ; purpose (native TTY frames
                                                  ; are the bug)
   (when (require 'corfu-terminal nil t)
@@ -263,7 +250,7 @@
     (setq corfu--frame-parameters
           (assoc-delete-all 'inhibit-double-buffering corfu--frame-parameters)))
 
-  ;; --- Evil: dismiss popup on insert -> normal (kept — good hygiene) ---------
+  ;; --- Evil: dismiss popup on insert -> normal (kept, good hygiene) ---------
   (add-hook 'evil-insert-state-exit-hook #'corfu-quit))
 
 ;; Fix 4: manual panic button.
@@ -284,3 +271,4 @@ Use this when a corfu child frame gets stuck as a black rectangle."
 (load! "langs/go.el")
 (load! "langs/python.el")
 (load! "langs/terraform.el")
+(load! "langs/rust.el")
