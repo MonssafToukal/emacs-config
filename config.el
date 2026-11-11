@@ -185,4 +185,3 @@
 (load! "langs/go.el")
 (load! "langs/python.el")
 (load! "langs/terraform.el")
-(load! "langs/rust.el")
